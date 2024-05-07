@@ -21,10 +21,19 @@ end
 
 
 class Game
+    
     def initialize
       @battlefield = Battlefield.new
       play
     end
-    @battlefield.display_grid
+
+    def play
+        @battlefield.display_grid
+    end
+    
 
 end 
+
+Game.new
+
+
