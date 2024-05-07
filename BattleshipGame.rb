@@ -18,3 +18,13 @@ class Battlefield
 
 
 end 
+
+
+class Game
+    def initialize
+      @battlefield = Battlefield.new
+      play
+    end
+    @battlefield.display_grid
+
+end 
