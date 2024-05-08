@@ -2,7 +2,7 @@
 class Battlefield
     attr_accessor :player_grid, :player_attack_grid, :computer_grid, :player_ships, :computer_ships
   
-    SHIP_SYMBOL = 'O'
+    SHIP_SYMBOL = 'S'
     HIT_SYMBOL = '*'
     MISS_SYMBOL = 'o'
     EMPTY_SYMBOL = '-'
@@ -24,14 +24,28 @@ class Battlefield
         puts "Attack Grid: "
         display_grid(@player_attack_grid)
         puts "Player's Grid:"
-        display_grid(@player_grid)
+        displayShips(@player_grid, @player_ships)
         if show_computer == "yes" 
             puts "\nComputer's Grid:"
-            display_grid(@computer_grid)
+            displayShips(@computer_grid, @computer_ships)
+        end
+    end
+
+    #Method to display player's ships on board
+    def displayShips(grid, ship)
+        grid.each_with_index do |row, i|
+            row.each_with_index do |cell, j|
+                if ship.include?([i, j])
+                    print "#{SHIP_SYMBOL} "
+                else
+                    print "#{cell} "
+                end
+            end
+        puts #newline
         end
     end
   
-    #Actual method to display board
+    #Method ethod to display board
     def display_grid(grid)
         grid.each { |row| puts row.join(' ') }
     end
@@ -42,10 +56,13 @@ class Battlefield
             @computer_grid[x][y] = HIT_SYMBOL
             @player_attack_grid[x][y] = HIT_SYMBOL
             puts "HIT"
+            @computer_ships.delete([x, y])
+            sleep(1)
         else
             @computer_grid[x][y] = MISS_SYMBOL
             @player_attack_grid[x][y] = MISS_SYMBOL
             puts "MISS"
+            sleep(1)
         end
     end
   
@@ -56,9 +73,12 @@ class Battlefield
         if @player_ships.include?([x, y])
             @player_grid[x][y] = HIT_SYMBOL
             puts "Computer hit at #{x},#{y}!"
+            @player_ships.delete([x,y])
+            sleep(1)
         else
             @player_grid[x][y] = MISS_SYMBOL
             puts "Computer missed at #{x},#{y}!"
+            sleep(1)
         end
     end
   
@@ -103,8 +123,9 @@ class Game
             end
 
             x_str, y_str = input.split(",")
-            x = x_str.to_i
-            y = y_str.to_i
+            x = x_str.to_i - 1 # rows are zero indexed
+            y = y_str.to_i - 1
+
             @battlefield.attack(x, y)
   
             break if @battlefield.game_over?
@@ -115,8 +136,9 @@ class Game
         puts "Game Over! You #{player_with_remaining_ships? ? 'win' : 'lose'}!"
     end
   
+    #Method to see if player has won
     def player_with_remaining_ships?
-        @battlefield.player_grid.any? { |row| row.include?(SHIP_SYMBOL) }
+        !@battlefield.player_ships.empty?
     end
 
 end
