@@ -1,9 +1,18 @@
 #module to help with ship randomization 
 module ShipRandomizer
-    def self.randomize_ship(length)
+    def randomize_ship(length)
         ship = []
-        length.times do
-            ship << rand(1..9)
+        horizontal = rand(2) == 0
+        if horizontal
+            # chooising the starting position for a horizontal ship
+            start_x = rand(10 - length)
+            start_y = rand(10)
+            length.times { |i| ship << [start_x + i, start_y] }
+        else
+            # choosing the starting position for a vertical ship
+            start_x = rand(10)
+            start_y = rand(10 - length)
+            length.times { |i| ship << [start_x, start_y + i] }
         end
         ship
     end
@@ -17,6 +26,8 @@ class Battlefield
     HIT_SYMBOL = '*'
     MISS_SYMBOL = 'o'
     EMPTY_SYMBOL = '-'
+
+    include ShipRandomizer
   
     def initialize
         #Player's top board
@@ -26,22 +37,33 @@ class Battlefield
         #Enemy board
         @computer_grid = Array.new(10) { Array.new(10, EMPTY_SYMBOL) }
         #Example ships
-        @player_ships = genRandShip(3)
+        @player_ships = getNumShip(1,5, true)
         #[[1,1], [2,3], [5,6]]
-        @computer_ships = genRandShip(3)
+        @computer_ships = getNumShip(1,5, false)
         #[[3,4], [6,5], [7,7]]
     end
   
     #Method to generate random ships
-    def genRandShip(num_ships)
+    def getNumShip(min,max, playerInput)
         ships = []
-        num_ships.times do
-            ship_length = rand(3..5)
-            ships << ShipRandomizer.randomize_ship(ship_length)
+        if playerInput
+            puts "How many ships do you want?"
+            num = gets.chomp.to_i
+            until num.between?(min, max)
+                puts "Invalid input! Please enter a number between #{min} and #{max}:"
+                num = gets.chomp.to_i
+                num.to_i
+            end
+        else 
+            num = @player_ships.length
         end
-        ships
+        num.times do
+            ship_length = rand(3..5)
+            ships << randomize_ship(ship_length)
+        end 
+        ships  
     end
-
+     
     #Chooses which boards to display
     def display_grids(show_computer)
         puts "Attack Grid: "
@@ -49,6 +71,7 @@ class Battlefield
         puts "Player's Grid:"
         displayShips(@player_grid, @player_ships)
         if show_computer == "yes" 
+            puts "COmputer: #{@computer_ships}"
             puts "\nComputer's Grid:"
             displayShips(@computer_grid, @computer_ships)
         end
@@ -58,7 +81,7 @@ class Battlefield
     def displayShips(grid, ship)
         grid.each_with_index do |row, i|
             row.each_with_index do |cell, j|
-                if ship.include?([i, j])
+                if ship.any? { |shipper| shipper.include?([i, j]) }
                     print "#{SHIP_SYMBOL} "
                 else
                     print "#{cell} "
@@ -95,12 +118,12 @@ class Battlefield
         y = rand(10)
         if @player_ships.include?([x, y])
             @player_grid[x][y] = HIT_SYMBOL
-            puts "Computer hit at #{x},#{y}!"
+            puts "Computer hit at #{x + 1},#{y + 1}!"
             @player_ships.delete([x,y])
             sleep(1)
         else
             @player_grid[x][y] = MISS_SYMBOL
-            puts "Computer missed at #{x},#{y}!"
+            puts "Computer missed at #{x + 1},#{y + 1}!"
             sleep(1)
         end
     end
