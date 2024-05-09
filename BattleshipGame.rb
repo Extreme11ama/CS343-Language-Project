@@ -1,3 +1,14 @@
+#module to help with ship randomization 
+module ShipRandomizer
+    def self.randomize_ship(length)
+        ship = []
+        length.times do
+            ship << rand(1..9)
+        end
+        ship
+    end
+end
+
 #The inner workings of the game
 class Battlefield
     attr_accessor :player_grid, :player_attack_grid, :computer_grid, :player_ships, :computer_ships
@@ -15,10 +26,22 @@ class Battlefield
         #Enemy board
         @computer_grid = Array.new(10) { Array.new(10, EMPTY_SYMBOL) }
         #Example ships
-        @player_ships = [[1,1], [2,3], [5,6]]
-        @computer_ships = [[3,4], [6,5], [7,7]]
+        @player_ships = genRandShip(3)
+        #[[1,1], [2,3], [5,6]]
+        @computer_ships = genRandShip(3)
+        #[[3,4], [6,5], [7,7]]
     end
   
+    #Method to generate random ships
+    def genRandShip(num_ships)
+        ships = []
+        num_ships.times do
+            ship_length = rand(3..5)
+            ships << ShipRandomizer.randomize_ship(ship_length)
+        end
+        ships
+    end
+
     #Chooses which boards to display
     def display_grids(show_computer)
         puts "Attack Grid: "
