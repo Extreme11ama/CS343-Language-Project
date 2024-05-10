@@ -27,6 +27,7 @@ class Battlefield
     MISS_SYMBOL = 'o'
     EMPTY_SYMBOL = '-'
 
+    #Inclusion of Module
     include ShipRandomizer
   
     def initialize
@@ -36,11 +37,9 @@ class Battlefield
         @player_grid = Array.new(10) { Array.new(10, EMPTY_SYMBOL) }
         #Enemy board
         @computer_grid = Array.new(10) { Array.new(10, EMPTY_SYMBOL) }
-        #Example ships
+        #Ships
         @player_ships = getNumShip(1,5, true)
-        #[[1,1], [2,3], [5,6]]
         @computer_ships = getNumShip(1,5, false)
-        #[[3,4], [6,5], [7,7]]
     end
   
     #Method to generate random ships
@@ -71,7 +70,7 @@ class Battlefield
         puts "Player's Grid:"
         displayShips(@player_grid, @player_ships)
         if show_computer == "yes" 
-            puts "COmputer: #{@computer_ships}"
+            #puts "COmputer: #{@computer_ships}"
             puts "\nComputer's Grid:"
             displayShips(@computer_grid, @computer_ships)
         end
@@ -91,46 +90,78 @@ class Battlefield
         end
     end
   
-    #Method ethod to display board
+    #Method to display board
     def display_grid(grid)
         grid.each { |row| puts row.join(' ') }
     end
   
     #Player attack method. 
     def attack(x, y)
-        if @computer_ships.include?([x, y])
-            @computer_grid[x][y] = HIT_SYMBOL
-            @player_attack_grid[x][y] = HIT_SYMBOL
-            puts "HIT"
-            @computer_ships.delete([x, y])
-            sleep(1)
-        else
+        hit = false
+        @computer_ships.each do |ship|
+            if ship.include?([x, y])
+                @computer_grid[x][y] = HIT_SYMBOL
+                @player_attack_grid[x][y] = HIT_SYMBOL
+                puts "HIT"
+                ship.delete([x, y])
+                hit = true
+                break 
+            end
+        end
+        unless hit
             @computer_grid[x][y] = MISS_SYMBOL
             @player_attack_grid[x][y] = MISS_SYMBOL
             puts "MISS"
-            sleep(1)
         end
+
+        sleep(1)
     end
   
     #Computer Attack Method
     def computer_attack
         x = rand(10)
         y = rand(10)
-        if @player_ships.include?([x, y])
-            @player_grid[x][y] = HIT_SYMBOL
-            puts "Computer hit at #{x + 1},#{y + 1}!"
-            @player_ships.delete([x,y])
-            sleep(1)
-        else
+        hit = false
+        @player_ships.each do |ship|
+            if ship.include?([x, y])
+                @player_grid[x][y] = HIT_SYMBOL
+                puts "Computer hit at #{x + 1},#{y + 1}!"
+                ship.delete([x, y]) 
+                hit = true
+                break 
+            end
+        end
+        unless hit
             @player_grid[x][y] = MISS_SYMBOL
             puts "Computer missed at #{x + 1},#{y + 1}!"
-            sleep(1)
+        end
+        sleep(1)
+    end
+
+    def getHelp 
+        puts "Would you like an intro to battleship?"
+        choice = gets.chomp.downcase
+        until ["yes", "no"].include?(choice)
+            puts "Please enter 'yes' or 'no'."
+            choice = gets.chomp.downcase
+        end
+        if choice == "no"
+            return
+        else 
+            puts
+            display_grid(@player_attack_grid)
+            puts "You put in coordinates to shoot at a position. Shoot until all the ships are gone."
+            puts "The top grid is your attack grid, showing all your shots, while the bottom grid displays " + 
+            "your ships' positions and your enemy's shots."
+            puts "The grids range from 1 to 10 across and down."
+            puts "For example, the top left position is '1, 1'."
+            puts "Good luck."
         end
     end
   
     #Game over method
     def game_over?
-        @player_ships.empty? || @computer_ships.empty?
+        @player_ships.flatten.empty? || @computer_ships.flatten.empty?
     end
 end
   
@@ -141,6 +172,7 @@ class Game
     #Initializes the game
     def initialize
         @battlefield = Battlefield.new
+        @battlefield.getHelp
         @show_computer = choose_display
         playGame
     end
@@ -172,7 +204,7 @@ class Game
             x = x_str.to_i - 1 # rows are zero indexed
             y = y_str.to_i - 1
 
-            @battlefield.attack(x, y)
+            @battlefield.attack(y, x)
   
             break if @battlefield.game_over?
   
