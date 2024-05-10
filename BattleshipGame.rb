@@ -1,10 +1,14 @@
-#module to help with ship randomization 
+# Name: Wasif Ramzan, Lennon Green
+# Course/Semester: CS343, Spring
+
+
+#Module to help with ship randomization 
 module ShipRandomizer
     def randomize_ship(length)
         ship = []
         horizontal = rand(2) == 0
         if horizontal
-            # chooising the starting position for a horizontal ship
+            # choosing the starting position for a horizontal ship
             start_x = rand(10 - length)
             start_y = rand(10)
             length.times { |i| ship << [start_x + i, start_y] }
@@ -22,6 +26,7 @@ end
 class Battlefield
     attr_accessor :player_grid, :player_attack_grid, :computer_grid, :player_ships, :computer_ships
   
+    #Constants
     SHIP_SYMBOL = 'S'
     HIT_SYMBOL = '*'
     MISS_SYMBOL = 'o'
@@ -125,7 +130,7 @@ class Battlefield
         @player_ships.each do |ship|
             if ship.include?([x, y])
                 @player_grid[x][y] = HIT_SYMBOL
-                puts "Computer hit at #{x + 1},#{y + 1}!"
+                puts "Computer hit at #{y + 1},#{x + 1}!"
                 ship.delete([x, y]) 
                 hit = true
                 break 
@@ -133,7 +138,7 @@ class Battlefield
         end
         unless hit
             @player_grid[x][y] = MISS_SYMBOL
-            puts "Computer missed at #{x + 1},#{y + 1}!"
+            puts "Computer missed at #{y + 1},#{x + 1}!"
         end
         sleep(1)
     end
@@ -177,7 +182,7 @@ class Game
         playGame
     end
 
-    #CHoose whether to see computer's board
+    #Choose whether to see computer's board
     def choose_display
         puts "Do you want to see the computer's grid? (yes/no)"
         choice = gets.chomp.downcase
@@ -205,12 +210,9 @@ class Game
             y = y_str.to_i - 1
 
             @battlefield.attack(y, x)
-  
             break if @battlefield.game_over?
-  
             @battlefield.computer_attack
         end
-  
         puts "Game Over! You #{player_with_remaining_ships? ? 'win' : 'lose'}!"
     end
   
