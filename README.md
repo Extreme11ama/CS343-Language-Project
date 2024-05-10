@@ -10,7 +10,5 @@ Welcome to the Battleship project in Ruby! This project aims to create a text-ba
 
 The code for the game is in the **BattlshipGame.rb** file. 
 
-## Google Doc
-
-### Summary Report
+## Summary Report
 https://docs.google.com/document/d/1NRdUbh7hrRafQ7HD_Pj2098iv1Ia3Xo6oA2SxyYyp7A/edit?pli=1
