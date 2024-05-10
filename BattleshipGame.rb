@@ -8,12 +8,10 @@ module ShipRandomizer
         ship = []
         horizontal = rand(2) == 0
         if horizontal
-            # choosing the starting position for a horizontal ship
             start_x = rand(10 - length)
             start_y = rand(10)
             length.times { |i| ship << [start_x + i, start_y] }
         else
-            # choosing the starting position for a vertical ship
             start_x = rand(10)
             start_y = rand(10 - length)
             length.times { |i| ship << [start_x, start_y + i] }
@@ -24,6 +22,7 @@ end
 
 #The inner workings of the game
 class Battlefield
+    #Attribute accessors 
     attr_accessor :player_grid, :player_attack_grid, :computer_grid, :player_ships, :computer_ships
   
     #Constants
@@ -35,6 +34,7 @@ class Battlefield
     #Inclusion of Module
     include ShipRandomizer
   
+    #Method that is automatically called when a battlefield object is created. 
     def initialize
         #Player's top board
         @player_attack_grid = Array.new(10) { Array.new(10, EMPTY_SYMBOL) }
@@ -47,7 +47,7 @@ class Battlefield
         @computer_ships = getNumShip(1,5, false)
     end
   
-    #Method to generate random ships
+    #Method to generate random ships.
     def getNumShip(min,max, playerInput)
         ships = []
         if playerInput
@@ -68,20 +68,19 @@ class Battlefield
         ships  
     end
      
-    #Chooses which boards to display
+    #Chooses which boards to display.
     def display_grids(show_computer)
         puts "Attack Grid: "
         display_grid(@player_attack_grid)
         puts "Player's Grid:"
         displayShips(@player_grid, @player_ships)
         if show_computer == "yes" 
-            #puts "COmputer: #{@computer_ships}"
             puts "\nComputer's Grid:"
             displayShips(@computer_grid, @computer_ships)
         end
     end
 
-    #Method to display player's ships on board
+    #Method to display player's ships on board.
     def displayShips(grid, ship)
         grid.each_with_index do |row, i|
             row.each_with_index do |cell, j|
@@ -91,7 +90,7 @@ class Battlefield
                     print "#{cell} "
                 end
             end
-        puts #newline
+        puts # newline
         end
     end
   
@@ -118,7 +117,6 @@ class Battlefield
             @player_attack_grid[x][y] = MISS_SYMBOL
             puts "MISS"
         end
-
         sleep(1)
     end
   
@@ -130,7 +128,7 @@ class Battlefield
         @player_ships.each do |ship|
             if ship.include?([x, y])
                 @player_grid[x][y] = HIT_SYMBOL
-                puts "Computer hit at #{y + 1},#{x + 1}!"
+                puts "Computer HIT at #{y + 1},#{x + 1}!"
                 ship.delete([x, y]) 
                 hit = true
                 break 
@@ -138,11 +136,12 @@ class Battlefield
         end
         unless hit
             @player_grid[x][y] = MISS_SYMBOL
-            puts "Computer missed at #{y + 1},#{x + 1}!"
+            puts "Computer MISSED at #{y + 1},#{x + 1}!"
         end
         sleep(1)
     end
 
+    #Method that displays introductory text to the game. 
     def getHelp 
         puts "Would you like an intro to battleship?"
         choice = gets.chomp.downcase
@@ -182,7 +181,7 @@ class Game
         playGame
     end
 
-    #Choose whether to see computer's board
+    #Choose whether to see computer's board.
     def choose_display
         puts "Do you want to see the computer's grid? (yes/no)"
         choice = gets.chomp.downcase
@@ -216,13 +215,11 @@ class Game
         puts "Game Over! You #{player_with_remaining_ships? ? 'win' : 'lose'}!"
     end
   
-    #Method to see if player has won
+    #Method to see if player has won.
     def player_with_remaining_ships?
         !@battlefield.player_ships.empty?
     end
-
 end
 
 #Game instance
 Game.new
-  
