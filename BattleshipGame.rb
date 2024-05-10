@@ -1,4 +1,4 @@
-# Name: Wasif Ramzan, Lennon Green
+# Name: Wasif Ramzan, Lennon Green, Vincent Sisu
 # Course/Semester: CS343, Spring
 
 
